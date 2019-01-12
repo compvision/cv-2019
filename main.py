@@ -14,8 +14,8 @@ isCross = False
 # maxThreshold = np.array([255,255,255],np.uint8)
 # minThreshold = np.array([30,0,200],np.uint8)
 # maxThreshold = np.array([90,255,255],np.uint8)
-minThreshold = np.array([20,0,100],np.uint8)
-maxThreshold = np.array([255,15,255],np.uint8)
+minThreshold = np.array([80,35,85],np.uint8)
+maxThreshold = np.array([255,255,255],np.uint8)
 lightblue = (255, 221, 0)                                                       # variable for the lightblue color
 focalLength = 720                                                               # focal length of camera
 degrees = u'\N{DEGREE SIGN}'                                                    # for degree sign usage
@@ -35,7 +35,7 @@ def displayValues():
     # print("Angle of Altitude = "+ str(proc.getAltitude())+degrees+"\n")
 
 #------------------------------- FOR LIVE VIDEO -------------------------------#
-cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture(1)
 
 while(True):                                                                    # while loop for continuous analyzation of frames through video capture
     ret, frame = cam.read()
@@ -52,8 +52,8 @@ while(True):                                                                    
     det.filterContours()                                                        # filtering the contours by size and number
     contours,index,corners,isRectangles= det.getContours()                                  # getting the contours, specific index, and array of corners
 
-
-    if (corners is not None):                                                   # checking if the corners array returned is not null
+    
+    if corners is not None and det.isRightRect(corners):                                                   # checking if the corners array returned is not null
         target= Target(corners)                                                # making a new Target object
         Imagewidth = target.getWidth()
         Xmid,Ymid = target.getCenter()
