@@ -7,6 +7,7 @@ class Target:
     Xmid = 0                                                # will hold the X value of the center point
     Ymid = 0                                                # will hold the Y value of the center point
 
+
 # default initial method that initializes variables stated above
     def __init__(self,array):
         for corner in array:                                # for loop that iterates through each corner array in the given array

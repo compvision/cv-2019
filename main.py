@@ -37,12 +37,7 @@ def displayValues():
 #------------------------------- FOR LIVE VIDEO -------------------------------#
 cam = cv2.VideoCapture(0)
 
-# network = Network()
-# network.userServer()
-
 while(True):                                                                    # while loop for continuous analyzation of frames through video capture
-    # network.waitForPing()
-
     ret, frame = cam.read()
     h,w = frame.shape[:2]                                                       # gets the height and width of the frame for analyzation purposes
     imgXcenter = w/2
@@ -55,29 +50,24 @@ while(True):                                                                    
     threshold = det.threshold(minThreshold,maxThreshold,frame)                  # getting thresholded frame
     det.Contours(threshold)                                                     # finding contours based on thresholded frame
     det.filterContours()                                                        # filtering the contours by size and number
-    contours,index,corners,isCross,isRect = det.getContours()                                  # getting the contours, specific index, and array of corners
+    contours,index,corners,isRectangles= det.getContours()                                  # getting the contours, specific index, and array of corners
 
 
     if (corners is not None):                                                   # checking if the corners array returned is not null
-        target = Target(corners)                                                # making a new Target object
+        target= Target(corners)                                                # making a new Target object
         Imagewidth = target.getWidth()
         Xmid,Ymid = target.getCenter()
         cv2.line(frame,(Xmid,Ymid),(Xmid,Ymid),lightblue,5)
         cv2.drawContours(frame, contours, index, lightblue, 8)
-        table.putValue('rectFound', isRect)
-        table.putValue('crossFound', isCross)
-        if(isRect):
-            print("rectangle")
+        #table.putValue('rectFound', isRect)
+        #table.putValue('crossFound', isCross)
+        if(isRectangles):
+            print("rectangles found")
             proc.calculate(focalLength,rectActualWidth,Imagewidth,Xmid-imgXcenter,imgYcenter-Ymid)
-            table.putValue('rectAzi', proc.getAzimuth())
-        else:
-            table.putValue('rectAzi', -1.0)
-        if(isCross):
-            print("cross")
-            proc.calculate(focalLength,crossActualWidth,Imagewidth,Xmid-imgXcenter,imgYcenter-Ymid)
-            table.putValue('crossAzi', proc.getAzimuth())
-        else:
-            table.putValue('crossAzi', -1.0)
+            #table.putValue('rectAzi', proc.getAzimuth())
+        #else:
+            #table.putValue('rectAzi', -1.0)
+    
     contoured=cv2.resize(frame,None,fx=0.5,fy=0.5)
     threshed=cv2.resize(threshold,None,fx=0.5,fy=0.5)
 
