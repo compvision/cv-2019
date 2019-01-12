@@ -82,4 +82,3 @@ while(True):                                                                    
     if key == 27:
         cv2.destroyAllWindows()
         break
-
