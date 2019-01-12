@@ -33,24 +33,24 @@ class TargetDetector:
                 self.corners = approx
 
     def isLeftRect(self, corners):
-        firsthighestY = [0]*2
-        secondhighestY = [0]*2
-        for corner in corners[0]:
-            if(corner[1]>firsthighestY[1]):
-                firsthighestY = corner
-            if(corner[1]>secondhighestY[1] and corner[1]!= firsthighestY[1]):
-                secondhighestY = corner
-        return firsthighestY[0]< secondhighestY[0]
+        highest = [0] * 2
+        lowest = [1000] * 2
+        for corner in corners:
+            if(corner[0][0] > highest[0]):
+                highest = corner[0]
+            if(corner[0][0] < lowest[0]):
+                lowest = corner[0]
+        return highest[1] < lowest[1]
     
     def isRightRect(self, corners):
-        firsthighestY = [0]*2
-        secondhighestY = [0]*2
-        for corner in corners[0]:
-            if(corner[1] > firsthighestY[1]):
-                firsthighestY = corner
-            if(corner[1] > secondhighestY[1] and corner[1] != firsthighestY[1]):
-                secondhighestY = corner
-        return (firsthighestY[0] < secondhighestY[0])
+        highest = [0] * 2
+        lowest = [1000] * 2
+        for corner in corners:
+            if(corner[0][0] > highest[0]):
+                highest = corner[0]
+            if(corner[0][0] < lowest[0]):
+                lowest = corner[0]
+        return highest[1] > lowest[1]
 
 
 # getter method that returns the contours array, index of significant contour, and the corners array
