@@ -23,7 +23,8 @@ centimeters = " cm"
 NetworkTables.initialize(server = "roboRIO-3341-FRC.local")
 table = NetworkTables.getTable("cv")
 
-
+leftCenter = 0
+rightCenter = 0
 # method that prints out the values in a nice format
 def displayValues():
     cv2.putText(contoured,"Distance: "+str(proc.getDistance()/2.54)+centimeters, (0,20), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(255,255,255))
@@ -51,14 +52,20 @@ while(True):                                                                    
     det.Contours(threshold)                                                     # finding contours based on thresholded frame
     det.filterContours()                                                        # filtering the contours by size and number
     contours,index,corners,isRectangles= det.getContours()                                  # getting the contours, specific index, and array of corners
-
     
-    if corners is not None and det.isRightRect(corners):                                                   # checking if the corners array returned is not null
+    if corners is not None:                                                   # checking if the corners array returned is not null
         target= Target(corners)                                                # making a new Target object
         Imagewidth = target.getWidth()
         Xmid,Ymid = target.getCenter()
         cv2.line(frame,(Xmid,Ymid),(Xmid,Ymid),lightblue,5)
-        cv2.drawContours(frame, contours, index, lightblue, 8)
+        #cv2.drawContours(frame, contours, det.index, lightblue, 8)
+        if det.leftRect is not None:
+            leftCenter = (int)((det.leftRect[0][0][0] + det.leftRect[2][0][0])/2)
+            cv2.line(frame, (det.leftRect[0][0][0], det.leftRect[0][0][1]), (det.leftRect[2][0][0], det.leftRect[2][0][1]), lightblue, 5)
+        if det.rightRect is not None:
+            rightCenter = (int)((det.rightRect[0][0][0] + det.rightRect[2][0][0])/2)
+            cv2.line(frame, (det.rightRect[0][0][0], det.rightRect[0][0][1]), (det.rightRect[2][0][0], det.rightRect[2][0][1]), lightblue, 5)
+        cv2.line(frame, (leftCenter, 100), (rightCenter, 100), lightblue, 5)
         #table.putValue('rectFound', isRect)
         #table.putValue('crossFound', isCross)
         if(isRectangles):
