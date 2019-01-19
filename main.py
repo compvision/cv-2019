@@ -6,14 +6,7 @@ from networktables import NetworkTables
 import numpy as np
 import cv2
 
-crossActualWidth = 2.54*6.5
-rectActualWidth = 2.54*7.5
-isRect = False
-isCross = False
-# minThreshold = np.array([0,30,60],np.uint8)
-# maxThreshold = np.array([255,255,255],np.uint8)
-# minThreshold = np.array([30,0,200],np.uint8)
-# maxThreshold = np.array([90,255,255],np.uint8)
+rectActualWidth = 2.54*8
 minThreshold = np.array([80,35,85],np.uint8)
 maxThreshold = np.array([255,255,255],np.uint8)
 lightblue = (255, 221, 0)                                                       # variable for the lightblue color
@@ -25,11 +18,12 @@ table = NetworkTables.getTable("cv")
 
 leftCenter = 0
 rightCenter = 0
+center = 0
 # method that prints out the values in a nice format
 def displayValues():
-    cv2.putText(contoured,"Distance: "+str(proc.getDistance()/2.54)+centimeters, (0,20), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(255,255,255))
-    cv2.putText(contoured,"Azimuth: "+str(proc.getAzimuth()), (0,40), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(255,255,255))
-    cv2.putText(contoured,"Altitude: "+str(proc.getAltitude()), (0,60), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(255,255,255))
+    cv2.putText(frame,"Distance: "+str(proc.getDistance()/2.54)+centimeters, (0,20), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(255,255,255))
+    cv2.putText(frame,"Azimuth: "+str(proc.getAzimuth()), (0,40), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(255,255,255))
+    cv2.putText(frame,"Altitude: "+str(proc.getAltitude()), (0,60), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(255,255,255))
     # for printing in terminal
     # print("\n"+"Distance = " + str(proc.getDistance())+centimeters)
     # print("Azimuth = " + str(proc.getAzimuth())+degrees)
@@ -40,7 +34,7 @@ cam = cv2.VideoCapture(1)
 
 while(True):                                                                    # while loop for continuous analyzation of frames through video capture
     ret, frame = cam.read()
-    h,w = frame.shape[:2]                                                       # gets the height and width of the frame for analyzation purposes
+    h, w = frame.shape[:2]                                                       # gets the height and width of the frame for analyzation purposes
     imgXcenter = w/2
     imgYcenter = h/2
     det = Detector()                                                            # makes a new TargetDetector object
@@ -55,9 +49,9 @@ while(True):                                                                    
     
     if corners is not None:                                                   # checking if the corners array returned is not null
         target= Target(corners)                                                # making a new Target object
-        Imagewidth = target.getWidth()
-        Xmid,Ymid = target.getCenter()
-        cv2.line(frame,(Xmid,Ymid),(Xmid,Ymid),lightblue,5)
+        imageWidth = target.getWidth()
+        xMid,yMid = target.getCenter()
+        cv2.line(frame,(xMid,yMid),(xMid,yMid),lightblue,5)
         #cv2.drawContours(frame, contours, det.index, lightblue, 8)
         if det.leftRect is not None:
             leftCenter = (int)((det.leftRect[0][0][0] + det.leftRect[2][0][0])/2)
@@ -65,25 +59,22 @@ while(True):                                                                    
         if det.rightRect is not None:
             rightCenter = (int)((det.rightRect[0][0][0] + det.rightRect[2][0][0])/2)
             cv2.line(frame, (det.rightRect[0][0][0], det.rightRect[0][0][1]), (det.rightRect[2][0][0], det.rightRect[2][0][1]), lightblue, 5)
-        cv2.line(frame, (leftCenter, 100), (rightCenter, 100), lightblue, 5)
-        #table.putValue('rectFound', isRect)
-        #table.putValue('crossFound', isCross)
-        if(isRectangles):
-            print("rectangles found")
-            proc.calculate(focalLength,rectActualWidth,Imagewidth,Xmid-imgXcenter,imgYcenter-Ymid)
+        if leftCenter != 0 and rightCenter != 0:
+            center = (leftCenter + rightCenter)/2
+            #proc.calculate(focalLength,rectActualWidth,imageWidth,xMid-imgXcenter,imgYcenter-yMid)
+            proc.calculate(focalLength, rectActualWidth, imageWidth, imgXcenter - center, imgYcenter - yMid)
+            cv2.line(frame, ((int)(center), 0), ((int)(center), h), lightblue, 10)
+            leftCenter = 0
+            rightCenter = 0
             #table.putValue('rectAzi', proc.getAzimuth())
         #else:
             #table.putValue('rectAzi', -1.0)
-    
-    contoured=cv2.resize(frame,None,fx=0.5,fy=0.5)
-    threshed=cv2.resize(threshold,None,fx=0.5,fy=0.5)
-
 
     displayValues()                                                             # method displays values in terminal
-    cv2.imshow("contoured", contoured)
-    cv2.imshow("threshed", threshed)
-    cv2.moveWindow("contoured", 0,20)
-    cv2.moveWindow("threshed", 650,20)
+    cv2.imshow("frame", frame)
+    cv2.imshow("threshold", threshold)
+    cv2.moveWindow("frame", 0,20)
+    cv2.moveWindow("threshold", 650,20)
     key = cv2.waitKey(10)
 
     if key == 27:
