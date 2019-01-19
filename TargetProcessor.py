@@ -9,10 +9,10 @@ class TargetProcessor:
         pass
 
 # method that calculates Distance, Azimuth, and Altitude
-    def calculate(self,f,w,iw,x,h):
+    def calculate(self,f,w,iw,x,y):
         self.distance = (f*w)/iw
         self.azimuth = math.atan(x/f)*180/math.pi
-        self.altitude = math.atan(h/f)*180/math.pi
+        self.altitude = math.atan(y/f)*180/math.pi
 
 # getter method that returns distance rounded to two decimal places
     def getDistance(self):
