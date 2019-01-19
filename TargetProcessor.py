@@ -2,8 +2,8 @@ import math
 
 class TargetProcessor:
     distance  = 0                                       # variable for distance
-    azimuth = -1.0                                         # variable for azimuth
-    altitude = -1.0                                        # variable for altitude
+    azimuth = -100                                         # variable for azimuth
+    altitude = -100                                        # variable for altitude
 
     def __init__(self):
         pass
