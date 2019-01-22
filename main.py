@@ -44,13 +44,13 @@ while(True):                                                                    
     threshold = det.threshold(minThreshold, maxThreshold, frame)                  # getting thresholded frame
     det.contours(threshold)                                                     # finding contours based on thresholded frame
     det.filterContours()                                                        # filtering the contours by size and number
-    corners = det.getCorners()                                  # getting the array of corners
-    
+    #corners = det.getCorners()                                  # getting the array of corners
+
     #target = Target(corners)                                                # making a new Target object
     #imageWidth = target.getWidth()
     #xMid, yMid = target.getCenter()
     #cv2.line(frame, (xMid, yMid), (xMid, yMid), lightblue, 5)
-    if corners is not None:                                                   # checking if the corners array returned is not null
+    if det.foundCorners():                                                   # checking if the corners array returned is not null
         if det.leftRect is not None:
             leftRect = Target(det.leftRect, True)
             targetCenter = leftRect.calculateTargetCenter()

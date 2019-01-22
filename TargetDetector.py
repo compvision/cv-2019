@@ -53,6 +53,8 @@ class TargetDetector:
                 lowest = corner[0]
         return highest[1] > lowest[1]
 
+    def foundCorners(self):
+        return self.corners is not None
 
 # getter method that returns the contours array, index of significant contour, and the corners array
     def getCorners(self):
