@@ -1,7 +1,6 @@
 from Target import Target
 from TargetDetector import TargetDetector as Detector
 from TargetProcessor import TargetProcessor as Processor
-from Network import Network
 from networktables import NetworkTables
 import numpy as np
 import cv2
@@ -18,7 +17,7 @@ table = NetworkTables.getTable("cv")
 
 leftCenter = 0
 rightCenter = 0
-center = 0
+targetCenter = 0
 # method that prints out the values in a nice format
 def displayValues():
     cv2.putText(frame, "Distance: " + str(proc.getDistance()/2.54) + centimeters, (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
@@ -47,35 +46,41 @@ while(True):                                                                    
     det.filterContours()                                                        # filtering the contours by size and number
     corners = det.getCorners()                                  # getting the array of corners
     
+    #target = Target(corners)                                                # making a new Target object
+    #imageWidth = target.getWidth()
+    #xMid, yMid = target.getCenter()
+    #cv2.line(frame, (xMid, yMid), (xMid, yMid), lightblue, 5)
     if corners is not None:                                                   # checking if the corners array returned is not null
-        target = Target(corners)                                                # making a new Target object
-        imageWidth = target.getWidth()
-        xMid, yMid = target.getCenter()
-        cv2.line(frame, (xMid, yMid), (xMid, yMid), lightblue, 5)
         if det.leftRect is not None:
+            leftRect = Target(det.leftRect, True)
+            targetCenter = leftRect.calculateTargetCenter()
+            cv2.putText(frame, "left: " + str(targetCenter), (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
+
             leftCenter = (int)((det.leftRect[0][0][0] + det.leftRect[2][0][0])/2)
             cv2.line(frame, (det.leftRect[0][0][0], det.leftRect[0][0][1]), (det.leftRect[2][0][0], det.leftRect[2][0][1]), lightblue, 5)
         if det.rightRect is not None:
+            rightRect = Target(det.rightRect, False)
+            targetCenter = rightRect.calculateTargetCenter()
+            cv2.putText(frame, "right: " + str(targetCenter), (0, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
+
             rightCenter = (int)((det.rightRect[0][0][0] + det.rightRect[2][0][0])/2)
             cv2.line(frame, (det.rightRect[0][0][0], det.rightRect[0][0][1]), (det.rightRect[2][0][0], det.rightRect[2][0][1]), lightblue, 5)
-        if leftCenter != 0 and rightCenter != 0:
-            center = (leftCenter + rightCenter)/2
-            #proc.calculate(focalLength,rectActualWidth,imageWidth,xMid-imgXcenter,imgYcenter-yMid)
-            proc.calculate(focalLength, rectActualWidth, imageWidth, imgXcenter - center, imgYcenter - yMid)
-            cv2.line(frame, ((int)(center), 0), ((int)(center), h), lightblue, 10)
-            leftCenter = 0
-            rightCenter = 0
-            table.putValue('rectAzi', proc.getAzimuth())
-        else:
-            table.putValue('rectAzi', -100)
+        if det.leftRect is not None and det.rightRect is not None:
+            targetCenter = (leftCenter + rightCenter)/2
+            cv2.line(frame, ((int)(targetCenter), 0), ((int)(targetCenter), h), lightblue, 10)
+
+        #proc.calculate(focalLength,rectActualWidth,imageWidth,xMid-imgXcenter,imgYcenter-yMid)
+        #proc.calculate(focalLength, rectActualWidth, w, imgXcenter - center, imgYcenter - 0)
+        proc.calculateAzimuth(focalLength, imgXcenter - targetCenter)
+
+    table.putValue("rectAzi", proc.getAzimuth())
 
     displayValues()                                                             # method displays values in terminal
     cv2.imshow("frame", frame)
     cv2.imshow("threshold", threshold)
     cv2.moveWindow("frame", 0, 20)
     cv2.moveWindow("threshold", 650, 20)
-    key = cv2.waitKey(10)
 
-    if key == 27:
+    if cv2.waitKey(10) == 27:
         cv2.destroyAllWindows()
         break
