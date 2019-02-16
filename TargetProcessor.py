@@ -8,14 +8,11 @@ class TargetProcessor:
     def __init__(self):
         pass
 
-# method that calculates Distance, Azimuth, and Altitude
-    def calculate(self, f, w, iw, x, y):
-        self.distance = (f * w)/iw
-        self.azimuth = math.atan(x/f) * 180/math.pi
-        self.altitude = math.atan(y/f) * 180/math.pi
-
     def calculateAzimuth(self, f, x):
         self.azimuth = math.atan(x/f) * 180/math.pi
+
+    def calculateDistance(self, f, ahyp, ihyp):
+        self.distance = (f * ahyp)/ihyp
 
 # getter method that returns distance rounded to two decimal places
     def getDistance(self):
@@ -28,5 +25,3 @@ class TargetProcessor:
 # getter method that returns altitude rounded to four decimal places
     def getAltitude(self):
         return round(self.altitude, 4)
-
-
