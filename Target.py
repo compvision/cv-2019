@@ -7,6 +7,12 @@ class Target:
     yMin = 1000                                             # will hold the value of the minimum Y value
     xMid = 0                                                # will hold the X value of the center point
     yMid = 0                                                # will hold the Y value of the center point
+    
+    #image hypotenuse
+    hypotenuse = 0
+
+    #actual hypotenuse
+    ahypotenuse = math.hypot(2, 5.5)
 
 # default initial method that initializes variables stated above
     def __init__(self, corners, isLeft):
@@ -39,7 +45,7 @@ class Target:
         return self.yMax - self.yMin
 
     def calculateTargetCenter(self):
-        delta = self.hypotenuse/math.hypot(2, 5.5) * 4
+        delta = self.hypotenuse/self.ahypotenuse * 4
         if self.isLeft:
             return self.xMax + delta
         return self.xMin - delta
