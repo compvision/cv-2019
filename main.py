@@ -23,7 +23,11 @@ def displayValues():
     cv2.putText(frame, "Altitude: " + str(proc.getAltitude()), (0, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
 
 #------------------------------- FOR LIVE VIDEO -------------------------------#
-cam = cv2.VideoCapture(1)
+cam = cv2.VideoCapture(0)
+
+cam.set(cv2.CAP_PROP_BRIGHTNESS, 0)
+cam.set(cv2.CAP_PROP_CONTRAST, 0)
+cam.set(cv2.CAP_PROP_SATURATION, 1)
 
 while(True):                                                                    # while loop for continuous analyzation of frames through video capture
     ret, frame = cam.read()
